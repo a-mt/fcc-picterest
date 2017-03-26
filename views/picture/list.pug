@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+    div(class="container")
+        if success
+          p(class="alert success") #{success}
+        if error
+          p(class="alert error") #{error}
+
+        a(href="/picture/new" class="pull-right") Add a new picture
+        h2(class="page-header") Your dashboard
+        
+        if docs.length > 0
+            div(class="grid" data-err="1")
+                for item in docs
+                    div(class="item thumbnail")
+                        img(src=item.url)
+                        span(class="glyphicon js-delete" data-id=item.id) &times;
+
+            if p
+                nav(id="page-nav")
+                  a(href="?p="+p)
+
+        else
+            p You don't have any pictures

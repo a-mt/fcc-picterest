@@ -1,0 +1,32 @@
+extends ../layout.pug
+
+block content
+
+  div(class="jumbotron")
+    div(class="container")
+
+        p Username: #{user.username}
+        if user.provider != 'local'
+            p Logged in via #{user.provider}
+
+  if user.provider == 'local'
+    div(class="container")
+
+        if success
+          p(class="alert success") #{success}
+
+        h2(class="page-header") Change password
+        form(method="post")
+            div(class="form-group")
+                label(for="password") Current password
+                input(type="password" name="password" id="password" class="form-control" required value=(data.password ? data.password : ''))
+                if errors.password
+                    p(class="error") #{errors.password.message}
+
+            div(class="form-group")
+                label(for="newpassword") New Password
+                input(type="password" name="newpassword" id="newpassword" class="form-control" required value=(data.newpassword ? data.newpassword : ''))
+                if errors.newpassword
+                    p(class="error") #{errors.newpassword.message}
+
+            input(type="submit" class="btn btn-default")

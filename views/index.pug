@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    div(class="jumbotron container")
+        if dashboard
+            h3 Dashboard of <b>#{dashboard.username}</b>
+        else
+            h3 &nbsp;
+
+    if docs.length > 0
+        div(class="container")
+            noscript You need to enable JavaScript !
+            div(class="grid")
+                for item in docs
+                    div(class="item thumbnail")
+                        img(src=item.url)
+                        a(href="/dashboard/"+item._creator.username) @#{item._creator.username}
+
+            if p
+                nav(id="page-nav")
+                  a(href="?p="+p)
