@@ -1,0 +1,26 @@
+extends ../layout
+
+block content
+    div(class="container")
+        h2(class="page-header") Import a CSV file
+        p(class="well") You can import a list of picture through a CSV, with no header line, that follows this convention :
+            code url_img*,credit.author,credit.link,url_video
+
+        if success
+            p(class="success alert") #{success}
+        if errors.csv
+            p(class="error alert") #{errors.csv.length} line(s) could not be imported
+                for item in errors.csv
+                    | <br>- Line #{item.line} : #{item.err}
+
+        form(method="post" enctype="multipart/form-data")
+            div(class="form-group")
+                label(for="file") File *
+                input(type="file" name="file" id="file" required)
+                if errors.file
+                    p(class="error") #{errors.file.message}
+
+            input(type="submit" class="btn btn-default")
+
+        br
+        a(href="/dashboard") Back to the list

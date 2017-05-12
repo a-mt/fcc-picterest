@@ -2,11 +2,12 @@ extends ../layout
 
 block content
     div(class="container")
+        a(href="/picture/import") Import a CSV
         h2(class="page-header") Add a picture
 
         form(method="post")
             div(class="form-group")
-                label(for="url") Url
+                label(for="url") Url *
                 input(type="text" name="url" id="url" class="form-control js-add-picture" required value=(data.url ? data.url : ''))
                 if errors.url
                     p(class="error") #{errors.url.message}
@@ -14,6 +15,20 @@ block content
             div(class="form-group")
                 div(class="js-picture thumbnail") Nothing to display
                 span(class="glyphicon glyphicon-refresh js-refresh-picture")
+
+            div(class="well")
+                label Credit
+                div(class="form-group")
+                    label(for="author") Author
+                    input(type="text" name="author" id="author" class="form-control" value=(data.author ? data.author : '') placehoder="natgeo")
+                    if errors.author
+                        p(class="error") #{errors.author.message}
+
+                div(class="form-group")
+                    label(for="link_to") Link to post
+                    input(type="text" name="link_to" id="link_to" class="form-control" value=(data.link_to ? data.link_to : '') placeholder="http://")
+                    if errors.link_to
+                        p(class="error") #{errors.link_to.message}
 
             input(type="submit" class="btn btn-default js-submit" disabled)
 

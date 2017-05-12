@@ -1,21 +1,33 @@
 extends layout
 
 block content
-    div(class="jumbotron container")
-        if dashboard
-            h3 Dashboard of <b>#{dashboard.username}</b>
-        else
-            h3 &nbsp;
 
-    if docs.length > 0
-        div(class="container")
-            noscript You need to enable JavaScript !
+    div(class="container")
+        h2(class="page-header")
+            if dashboard
+                | Dashboard of <b>#{dashboard.username}</b> 
+            else
+                | All pictures 
+            | (#{nbtotal} pic#{(nbtotal==1 ? '' : 's')}) &nbsp;
+            small Page #{p} / #{totalp}
+
+        if docs.length > 0
+            noscript This website works best with JavaScript !
             div(class="grid")
                 for item in docs
-                    div(class="item thumbnail")
-                        img(src=item.url)
-                        a(href="/dashboard/"+item._creator.username) @#{item._creator.username}
+                    div(class="item thumbnail" data-page-url=url)
+                        if item.video
+                            video(src=item.video controls poster=item.url)
+                        else
+                            img(src=item.url)
 
-            if p
-                nav(id="page-nav")
-                  a(href="?p="+p)
+                        p
+                            a(href="/dashboard/"+item._creator.username) @#{item._creator.username}
+                            if item.author
+                                span(class="source") Source: 
+                                    if item.link_to
+                                        a(href=item.link_to target="_blank") #{item.author}
+                                    else
+                                        | #{item.author}
+
+            include inc.paging.pug

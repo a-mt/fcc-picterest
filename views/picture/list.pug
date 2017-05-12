@@ -8,18 +8,28 @@ block content
           p(class="alert error") #{error}
 
         a(href="/picture/new" class="pull-right") Add a new picture
-        h2(class="page-header") Your dashboard
+        h2(class="page-header") Your dashboard (#{nbtotal} pic#{(nbtotal==1 ? '' : 's')}) &nbsp;
+            small Page #{p} / #{totalp}
         
         if docs.length > 0
             div(class="grid" data-err="1")
                 for item in docs
-                    div(class="item thumbnail")
-                        img(src=item.url)
+                    div(class="item thumbnail" data-page-url=url)
+                        if item.video
+                            video(src=item.video controls poster=item.url)
+                        else
+                            img(src=item.url)
                         span(class="glyphicon js-delete" data-id=item.id) &times;
 
-            if p
-                nav(id="page-nav")
-                  a(href="?p="+p)
+                        if item.author
+                            p
+                                span(class="source") Source: 
+                                    if item.link_to
+                                        a(href=item.link_to target="_blank") #{item.author}
+                                    else
+                                        | #{item.author}
+
+            include ../inc.paging.pug
 
         else
             p You don't have any pictures
