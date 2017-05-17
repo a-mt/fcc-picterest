@@ -1,0 +1,54 @@
+extends layout
+
+block content
+    div(class="container")
+        a(class="pull-right" href="/dashboard/" + dashboard.username) Dashboard
+        h2(class="page-header")
+            | Cloud of tags of #{dashboard.username}
+
+        if tags
+            ul(id="cloud")
+                for tag in tags
+                    li
+                        -var percent = (tag.count/total)*100
+                        case true
+                            when percent > 70
+                                -var n=10
+                            when percent > 50
+                                -var n=9
+                            when percent > 30
+                                -var n=8
+                            when percent > 20
+                                -var n=7
+                            when percent > 10
+                                -var n=6
+                            when percent > 5
+                                -var n=5
+                            when percent > 3
+                                -var n=4
+                            when percent > 2
+                                -var n=3
+                            when percent > 1
+                                -var n=2
+                            default
+                                -var n=1
+
+                        a(href="/tags/" + tag._id class="tag" + n) #{tag._id}
+        style.
+         #cloud a.tag1 { font-size: 0.7em; font-weight: 100; }
+         #cloud a.tag2 { font-size: 0.8em; font-weight: 200; }
+         #cloud a.tag3 { font-size: 0.9em; font-weight: 300; }
+         #cloud a.tag4 { font-size: 1.0em; font-weight: 400; }
+         #cloud a.tag5 { font-size: 1.2em; font-weight: 500; }
+         #cloud a.tag6 { font-size: 1.4em; font-weight: 600; }
+         #cloud a.tag7 { font-size: 1.6em; font-weight: 700; }
+         #cloud a.tag8 { font-size: 1.8em; font-weight: 800; }
+         #cloud a.tag9 { font-size: 2.2em; font-weight: 900; }
+         #cloud a.tag10 { font-size: 2.5em; font-weight: 900; }
+         #cloud {
+            padding: 15px; margin: 0;
+            line-height: 1.5em; text-align: center;
+            width: 500px; background-color: #f5f5f5;
+         }
+         #cloud li { display: inline-block; margin: 0 5px; }
+         #cloud a { padding: 0px; }

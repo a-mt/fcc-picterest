@@ -66,6 +66,14 @@ form p { padding: 5px; }
     pointer-events: none;
     transition: opacity .5s;
 }
+@media (max-width: 768px) {
+    .item {
+        width: calc(100vw - 30px);
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
 .item.on {
     opacity: 1;
     pointer-events: auto;
@@ -85,12 +93,32 @@ form p { padding: 5px; }
     top: 5px; right: 5px;
     display: none;
 
-    width: 1em; height: 1em;
-    line-height: 0.8em;
-    border-radius: 100%;
+    width: 20px; height: 20px;
+    padding: 2px 0 0 1px;
+    line-height: 0.5em;
+
     text-align: center;
+    border-radius: 100%;
     background-color: rgba(255,255,255,0.7);
 }
+.js-tag {
+    cursor: pointer;
+    position: absolute;
+    top: 5px; right: 35px;
+    display: none;
+
+    width: 20px; height: 20px;
+    padding: 5px 0 0 0;
+    font-size: 0.9em;
+
+    text-align: center;
+    border-radius: 100%;
+    background-color: rgba(255,255,255,0.7);
+}
+.js-tag.left {
+    right: 5px;
+}
+
 .item p {
     position: absolute;
     bottom: 0; left: 0;
@@ -104,6 +132,7 @@ form p { padding: 5px; }
     color: inherit;
 }
 .item:hover .js-delete,
+.item:hover .js-tag,
 .item:hover p {
     display: block;
 }
@@ -118,4 +147,46 @@ form p { padding: 5px; }
 video {
     max-width: 100%;
     max-height: 100%;
+}
+.item .tags {
+    display: none;
+}
+
+/* popup */
+.modal-content,
+.modal-content .btn { border-radius: 2px; }
+.modal-footer { text-align: center; }
+.modal-body { padding: 0; }
+.modal-body img {
+    display: block;
+    margin: 0 auto;
+    max-width: 600px;
+    max-height: 50vh;
+}
+
+.tags { padding: 15px; }
+.tag { float:left; margin-right: 10px; }
+.tag input {
+    width: 7em;
+    font-size: 0.8em;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    padding: 0 5px;
+}
+.tag span {
+    color: #ccc;
+    padding-left: 3px;
+    cursor: pointer;
+}
+.tag .glyphicon-remove {
+    display: none;
+    float: right;
+    padding-top: 4px;
+}
+.tag .glyphicon-remove:hover,
+.tag .glyphicon-remove:hover + a {
+    color: #333;
+}
+.tag:hover .glyphicon-remove {
+    display: inline-block;
 }

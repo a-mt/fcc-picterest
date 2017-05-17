@@ -1,33 +1,28 @@
 extends layout
 
 block content
-
     div(class="container")
+        if dashboard
+            a(class="pull-right" href="/cloud/" + dashboard.username) Cloud of tags
+
         h2(class="page-header")
             if dashboard
-                | Dashboard of <b>#{dashboard.username}</b> 
+                | Pictures of <b>#{dashboard.username}</b> 
+            else if tag
+                | Pictures ##{tag} 
             else
-                | All pictures 
+                | Pictures 
             | (#{nbtotal} pic#{(nbtotal==1 ? '' : 's')}) &nbsp;
             small Page #{p} / #{totalp}
 
         if docs.length > 0
             noscript This website works best with JavaScript !
             div(class="grid")
+
+                -var edit = false
                 for item in docs
-                    div(class="item thumbnail" data-page-url=url)
-                        if item.video
-                            video(src=item.video controls poster=item.url)
-                        else
-                            img(src=item.url)
-
-                        p
-                            a(href="/dashboard/"+item._creator.username) @#{item._creator.username}
-                            if item.author
-                                span(class="source") Source: 
-                                    if item.link_to
-                                        a(href=item.link_to target="_blank") #{item.author}
-                                    else
-                                        | #{item.author}
-
+                    include inc.item.pug
             include inc.paging.pug
+        else
+            p There are no pictures here. 
+                a(href="/picture/new") Add your own !

@@ -7,3 +7,8 @@ noscript
 if p != totalp
     nav(id="page-nav" class="thumbnail")
       a(href="?p="+(p+1)) Next page
+
+script(type="text/tpl" id="add-tag")
+    div(class="tag")
+        span(class="glyphicon glyphicon-remove")
+        a(href="/tags/{{tag}}") \#{{tag}}

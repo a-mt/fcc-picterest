@@ -1,0 +1,33 @@
+div(class="item thumbnail" data-page-url=url id="item" + item._id)
+    if item.video
+        video(src=item.video controls poster=item.url)
+    else
+        img(src=item.url)
+
+    -var ownit = (user && user.id == item._creator.id)
+    if ownit
+        span(class="glyphicon js-delete" data-id=item.id) &times;
+    span(class="glyphicon glyphicon-tags js-tag" + (ownit ? "" : " left") data-id=item.id)
+
+    p
+        a(href="/dashboard/"+item._creator.username) @#{item._creator.username}
+        if item.author
+            span(class="source") Source: 
+                if item.link_to
+                    a(href=item.link_to target="_blank") #{item.author}
+                else
+                    | #{item.author}
+
+    if item.tags || ownit
+        div(class="tags clearfix")
+            if item.tags
+                for tag in item.tags
+                    div(class="tag")
+                        if ownit
+                            span(class="glyphicon glyphicon-remove")
+                        a(href="/tags/" + tag) ##{tag}
+
+            if ownit
+                div(class="tag")
+                    input(type="text" placeholder="New tag...")
+                    span(class="glyphicon glyphicon-plus")

@@ -183,12 +183,134 @@ function PictureHandler(){
             });
         });
     };
+
+    // List pictures with that tag
+    this.listTag = function(req, res) {
+
+        // Retrieve given tag
+        var tag = req.params.tag;
+
+        renderList(req, res, {
+            tag: tag,
+            title: '#' + tag,
+        });
+    };
+
+    // Add a tag to the current picture
+    this.addTag  = function(req, res) {
+        var id  = req.body.id,
+            tag = req.body.value;
+
+        Picture.findOneAndUpdate({
+            _id: id,
+            _creator: req.user.id
+        }, {
+            $addToSet: {"tags": tag}
+        }, function(err, doc) {
+            if(err) {
+                console.err(err);
+            }
+            var newInsert = (doc.tags.indexOf(tag) == -1);
+            res.send(newInsert ? 'NEW' : 'NNEW');
+        });
+    };
+
+    // Delete a tag from the current picture
+    this.deleteTag  = function(req, res) {
+        var id  = req.body.id,
+            tag = req.body.value;
+
+        Picture.findOneAndUpdate({
+            _id: id,
+            _creator: req.user.id
+        }, {
+            $pull: {"tags": tag}
+        }, {new: true}, function(err, doc) {
+            if(err) {
+                console.err(err);
+            }
+            res.send('OK');
+        });
+    };
+
+    // Get the user's tag
+    this.tagcloudUser = function(req, res) {
+
+        // Retrieve  given user
+        var username = req.params.user;
+        var User     = require('../models/user/local');
+
+        // Check that this user exists
+        User.findOne({
+            username: username
+        }, function(err, user){
+            if(err || !user) {
+                res.status(404);
+
+                if(req.xhr) {
+                    res.send('Not found');
+                } else {
+                    res.redirect('/');
+                }
+                return;
+            }
+
+            // Retrieve the tags
+            Picture.aggregate([
+               { $match: { _creator: user.id } },
+               { $project: { "tags":1 }},
+               { $unwind: "$tags" },
+               { $group: { "_id": "$tags", "count": { "$sum": 1 } }}
+
+            ], function(err,result) {
+                var total = 0;
+
+                if(result) {
+                    for(var i=0; i<result.length; i++) {
+                        total += result[i].count;
+                    }
+                    shuffle(result);
+                } else {
+                    result = [];
+                }
+                res.render('tagcloud', {
+                    title: 'Cloud of tags of ' + user.username,
+                    dashboard: user,
+                    tags: result,
+                    total: total
+                });
+            });
+        });
+    };
+}
+
+/**
+ * Shuffles array in place.
+ * @param {Array} a items The array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
 }
 
 function renderList(req, res, opts) {
     var q = {};
     if(opts.user) {
         q._creator = opts.user.id;
+    }
+    if(opts.tag) {
+        if(opts.tag == 'video') {
+            q.video = { $exists: true };
+        } else if(opts.tag == 'none') {
+            q.tags = { $exists: false };
+        } else {
+            q.tags = opts.tag;
+        }
     }
 
     // Nombre total de post
@@ -221,6 +343,7 @@ function renderList(req, res, opts) {
                 title: opts.title,
                 docs: err ? [] : docs,
                 dashboard: opts.user,
+                tag: opts.tag,
 
                 // Paginig
                 nbtotal: nbtotal,

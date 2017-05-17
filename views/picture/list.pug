@@ -13,21 +13,9 @@ block content
         
         if docs.length > 0
             div(class="grid" data-err="1")
+                -var edit = true
                 for item in docs
-                    div(class="item thumbnail" data-page-url=url)
-                        if item.video
-                            video(src=item.video controls poster=item.url)
-                        else
-                            img(src=item.url)
-                        span(class="glyphicon js-delete" data-id=item.id) &times;
-
-                        if item.author
-                            p
-                                span(class="source") Source: 
-                                    if item.link_to
-                                        a(href=item.link_to target="_blank") #{item.author}
-                                    else
-                                        | #{item.author}
+                   include ../inc.item.pug
 
             include ../inc.paging.pug
 

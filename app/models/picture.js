@@ -31,7 +31,8 @@ var Picture = new Schema({
     author: {
         type: String,
         trim: true
-    }
+    },
+    tags : [String]
 });
 
 module.exports = mongoose.model('Picture', Picture);

@@ -32,8 +32,9 @@ $.fn.onImgLoaded = function(callback, maxTime) {
             callback.call($self);
         }
     }
+
     var i = 0,
-        n = (list.length + listVideo.length)-1;
+        n = (list.length + listVideo.length);
     var timer = {},
         count = {};
 
@@ -57,7 +58,7 @@ $.fn.onImgLoaded = function(callback, maxTime) {
             }
             count[c] = 1;
             i++;
-            if(i == n) {
+            if(i >= n) {
                 setTimeout(function(){
                     callback.call($self);
                 }, 200);
@@ -114,7 +115,7 @@ var ScrollPaginate = {
 
     end: function(end) {
         if(typeof end != 'undefined' && end) {
-            ScrollPaginate.container.after('<p style="float: right">You\'ve reached the end of the internet!</p>');
+            ScrollPaginate.container.after('<p style="float: right; margin-top: 15px">You\'ve reached the last picture!</p>');
         }
         ScrollPaginate.stop = 1;
         $(window).unbind('scroll.infinitescroll');
@@ -262,12 +263,14 @@ var FeedPicture = {
     placeholdImg: false,
     placeholdImgLink: 'http://i.imgur.com/Qijs1ss.png',
     isInit: false,
+    currentEdit: false,
 
     /* Bind events */
     init: function() {
         FeedPicture.initFeed();
 
         $('.grid').on('click', '.js-delete', FeedPicture.delete);
+        $('.grid').on('click', '.js-tag', FeedPicture.tag);
     },
 
     /* Init Masonry (pinterest-like grid) */
@@ -337,6 +340,88 @@ var FeedPicture = {
                alert('Something went wrong (' + xhr.status + ' ' + xhr.responseText + ')');
            }
        });
+    },
+
+    /* Edit / view tags */
+    tag: function(e) {
+        var $target = $(e.target);
+        FeedPicture.currentEdit = $target.data('id');
+
+        var img   = $target.siblings('img').clone(),
+            tags  = $target.siblings('.tags').clone(),
+            popup = $('#modal');
+
+        // Set content
+        $('.modal-title', popup).html('');
+        var $body = $('.modal-body', popup).html('');
+            $body.append(img);
+            $body.append('<div class="content">').append(tags);
+
+        tags.find('.tag input').on('keypress', function(e) {
+            if(e.which == 13) {
+                FeedPicture.addTag(this);
+            }
+        });
+        tags.on('click', '.glyphicon-plus', function(){
+            FeedPicture.addTag(this.previousElementSibling);
+        });
+        tags.on('click', '.glyphicon-remove', function(){
+            FeedPicture.removeTag(this.nextElementSibling);
+        });
+
+        // Display
+        popup.modal('show');
+        $('.modal-background').addClass('modal-close');
+    },
+
+    removeTag: function(span) {
+        var val = span.innerHTML.trim().replace(/^#/, '');
+        $.ajax({
+            url: '/tags/delete',
+            method: 'POST',
+            data: {
+                id: FeedPicture.currentEdit,
+                value: val
+            },
+            success: function(msg) {
+                $(span).parent().remove();
+                FeedPicture.updateTags();
+            },
+            error: function(xhr) {
+                alert('Something went wrong (' + xhr.status + ' ' + xhr.responseText + ')');
+            }
+        });
+    },
+
+    addTag: function(input) {
+        var val = input.value.trim().replace(/[^-a-zA-Z0-9 ]/, '').toLowerCase();
+        if(!val) {
+            return;
+        }
+        $.ajax({
+            url: '/tags/add',
+            method: 'POST',
+            data: {
+                id: FeedPicture.currentEdit,
+                value: val
+            },
+            success: function(msg) {
+                input.value = '';
+                if(msg == 'NEW') {
+                    var html = $('#add-tag').html().replace(/{{tag}}/g, val);
+                    $(input).closest('.tag').before(html);
+                    FeedPicture.updateTags();
+                }
+            },
+            error: function(xhr) {
+                alert('Something went wrong (' + xhr.status + ' ' + xhr.responseText + ')');
+            }
+        });
+    },
+
+    updateTags: function() {
+        $('#item' + FeedPicture.currentEdit + ' .tags')
+            .replaceWith($('#modal .tags').clone());
     }
 };
 
